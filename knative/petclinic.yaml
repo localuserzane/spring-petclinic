@@ -1,0 +1,37 @@
+#
+# Spring PetClinic Sample Application on Knative:
+#
+# Prereq:
+# helm install --name petclinic-db --set mysqlDatabase=petclinic stable/mysql
+# kubectl apply -f knative/petclinic.yaml
+# export SERVICE_HOST=`kubectl get route petclinic -o jsonpath="{.status.domain}"`
+# export SERVICE_IP=`kubectl get svc knative-ingressgateway -n istio-system -o jsonpath="{.status.loadBalancer.ingress[*].ip}"`
+# add "$SERVICE_IP $SERVICE_HOST" to /etc/hosts or configure DNS: https://github.com/knative/docs/blob/master/serving/DNS.md
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: petclinic
+spec:
+  runLatest:
+    configuration:
+      revisionTemplate:
+        spec:
+          container:
+            image: springdeveloper/spring-petclinic:2.0.0.BUILD-SNAPSHOT
+            env:
+              - name: SPRING_PROFILES_ACTIVE
+                value: 'production,kubernetes'
+              - name: MYSQL_HOST
+                value: petclinic-db-mysql
+              - name: MYSQL_USERNAME
+                value: root
+              - name: MYSQL_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: petclinic-db-mysql
+                    key: mysql-root-password
+            readinessProbe:
+              httpGet:
+                path: /manage/health
+              initialDelaySeconds: 5
+              periodSeconds: 5

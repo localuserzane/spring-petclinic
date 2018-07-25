@@ -5,10 +5,11 @@ metadata:
   labels:
     app: petclinic
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
   - name: http
     port: 80
+    nodePort: 32323
     targetPort: 8080
   selector:
     app: petclinic

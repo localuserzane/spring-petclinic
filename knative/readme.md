@@ -2,12 +2,11 @@
 
 ### prerequisites
 
-1. A [Knative Serving installation](https://github.com/knative/docs/blob/master/install/README.md)
+1. A [Knative Serving installation](https://github.com/knative/docs/blob/master/install/README.md) version 0.4 or later
 
 2. A demo namespace
 ```
 kubectl create namespace demo
-kubectl label namespace demo istio-injection=enabled
 ```
 
 3. [Helm installed](https://docs.helm.sh/using_helm/#installing-helm)
@@ -23,9 +22,11 @@ helm install --name petclinic-db --set mysqlDatabase=petclinic stable/mysql --na
 kubectl apply --namespace demo -f https://raw.githubusercontent.com/trisberg/spring-petclinic/kubernetes/knative/petclinic.yaml
 ```
 
+_NOTE_: The annotation `autoscaling.knative.dev/minScale: "1"` will prevent the app from getting scaled down to 0.
+
 ### access the app
 
-You can configure Knative Serving with a fixed IP for the knative-ingressgateway and a custom default domain. Once you configure your DNS you can the access the PetClinic app using your custom domain with a petclinic host prefix. See [Setting up a custom domain](https://github.com/knative/docs/blob/master/serving/using-a-custom-domain.md).
+You can configure Knative Serving with a fixed IP for the istio-ingressgateway and a custom default domain. Once you configure your DNS you can the access the PetClinic app using your custom domain with a petclinic host prefix. See [Setting up a custom domain](https://github.com/knative/docs/blob/master/serving/using-a-custom-domain.md).
 
 An alternative is to edit your `/etc/hosts` file and add `petclinic.demo.example.com` host name for the IP address that the knative-ingressgateway is listening on.
 
@@ -33,7 +34,7 @@ An alternative is to edit your `/etc/hosts` file and add `petclinic.demo.example
 
 For a cluster with a LoadBalancer you can look up the IP address to use with:
 ```
-kubectl get svc knative-ingressgateway -n istio-system -o jsonpath="{.status.loadBalancer.ingress[*].ip}"
+kubectl get svc istio-ingressgateway -n istio-system -o jsonpath="{.status.loadBalancer.ingress[*].ip}"
 ```
 
 Add `petclinic.demo.example.com` host name for that IP address to your `/etc/hosts` file.

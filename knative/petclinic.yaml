@@ -9,6 +9,10 @@ spec:
   runLatest:
     configuration:
       revisionTemplate:
+        metadata:
+          annotations:
+            # Disable scale to zero with a minScale of 1.
+            autoscaling.knative.dev/minScale: "1"
         spec:
           container:
             image: springdeveloper/spring-petclinic:2.0.0.BUILD-SNAPSHOT

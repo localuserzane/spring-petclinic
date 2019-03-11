@@ -16,13 +16,27 @@ kubectl create namespace demo
 helm install --name petclinic-db --set mysqlDatabase=petclinic stable/mysql --namespace demo
 ```
 
-### install
+### install with kubectl
 
 ```
 kubectl apply --namespace demo -f https://raw.githubusercontent.com/trisberg/spring-petclinic/kubernetes/knative/petclinic.yaml
 ```
 
 _NOTE_: The annotation `autoscaling.knative.dev/minScale: "1"` will prevent the app from getting scaled down to 0.
+
+### install with riff
+
+If you have [riff installed](https://projectriff.io/docs/getting-started/) then you can use the following command:
+
+```
+riff service create petclinic --namespace demo --image springdeveloper/spring-petclinic:2.0.0.BUILD-SNAPSHOT --env SPRING_PROFILES_ACTIVE="production,kubernetes" --env MYSQL_HOST=petclinic-db-mysql --env MYSQL_USERNAME=root --env-from MYSQL_PASSWORD=secretKeyRef:petclinic-db-mysql:mysql-root-password
+```
+
+To prevent the app from scaling down to zero use the following command to patch the Knative service:
+
+```
+kubectl patch -n demo ksvc petclinic --type=json -p='[{"op": "add", "path": "/spec/runLatest/configuration/revisionTemplate/metadata/annotations", "value": {"autoscaling.knative.dev/minScale": "1"}}]'
+```
 
 ### access the app
 

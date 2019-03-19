@@ -1,0 +1,54 @@
+#
+# Spring PetClinic Sample Application on Knative:
+#
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: petclinic
+spec:
+  runLatest:
+    configuration:
+      build:
+        apiVersion: build.knative.dev/v1alpha1
+        kind: Build
+        spec:
+          serviceAccountName: riff-build
+          source:
+            git:
+              revision: kubernetes
+              url: https://github.com/trisberg/spring-petclinic.git
+          template:
+            arguments:
+            - name: IMAGE
+              value: us.gcr.io/cf-sandbox-trisberg/petclinic:cnb
+            - name: BUILDER_IMAGE
+              value: "packs/samples:v3alpha2"
+            - name: RUN_IMAGE
+              value: "packs/run:v3alpha2"
+            kind: BuildTemplate
+            name: buildpacks-cnb
+      revisionTemplate:
+        metadata:
+          annotations:
+            # Disable scale to zero with a minScale of 1.
+            autoscaling.knative.dev/minScale: "1"
+        spec:
+          container:
+            image: us.gcr.io/cf-sandbox-trisberg/petclinic:cnb
+            env:
+              - name: SPRING_PROFILES_ACTIVE
+                value: 'production,kubernetes'
+              - name: MYSQL_HOST
+                value: petclinic-db-mysql
+              - name: MYSQL_USERNAME
+                value: root
+              - name: MYSQL_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: petclinic-db-mysql
+                    key: mysql-root-password
+            readinessProbe:
+              httpGet:
+                path: /manage/health
+              initialDelaySeconds: 5
+              periodSeconds: 5

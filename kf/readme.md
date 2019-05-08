@@ -1,4 +1,4 @@
-## Knative config files for Spring PetClinic
+## Deploying Spring PetClinic with kf
 
 ### prerequisites
 

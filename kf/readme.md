@@ -120,7 +120,7 @@ Add the following dependencies:
 #### deploy the app:
 
 ```
-kf push petclinic --container-registry gcr.io/cf-sandbox-trisberg \
+kf push petclinic --container-registry gcr.io/$(gcloud config get-value core/project) \
  -e SPRING_PROFILES_ACTIVE="cloud" \
  -e SPRING_CLOUD_GCP_SQL_ENABLED='true' \
  -e VCAP_APPLICATION='{"instance_index":0,"name":"petclinic"}' \

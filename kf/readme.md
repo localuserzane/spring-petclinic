@@ -99,7 +99,7 @@ kubectl apply -f cnb.yaml
 
 #### checkout and prepare the app
 
-Checkout the [Spring PetClinic sample app](https://github.com/spring-projects/spring-petclinic) and add the following dependencies to the `pom.xml`
+Checkout the [Spring PetClinic sample app](https://github.com/spring-projects/spring-petclinic) and add the [Spring Cloud GCP]() dependencies to the `pom.xml`
 
 Add the following dependencies:
 

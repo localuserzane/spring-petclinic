@@ -19,8 +19,6 @@
   helm install . --name broker --namespace catalog
   ```
 
-5. The `svcat` CLI [installed](https://github.com/kubernetes-incubator/service-catalog/blob/master/docs/install.md#manual)
-
 ### sample Spring Boot app deployment
 
 #### enable Istio Egress for GCP

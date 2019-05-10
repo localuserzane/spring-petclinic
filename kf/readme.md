@@ -66,7 +66,7 @@ Using kf:
 
 ```
 kf create-service google-cloudsql-mysql mysql-db-n1-standard-1 petdb
-kf bind-service petclinic petdb --binding-name petclinic-petdb 
+kf bind-service petclinic petdb --binding-name petclinic-petdb
 ```
 
 #### enable Istio Egress to Google Cloud SQL instance:
@@ -130,3 +130,15 @@ kf push petclinic --container-registry gcr.io/$(gcloud config get-value core/pro
  -e SPRING_CLOUD_GCP_SQL_INSTANCE_CONNECTION_NAME='${vcap.services.kf-binding-petclinic-petdb.ProjectId}:${vcap.services.kf-binding-petclinic-petdb.region}:${vcap.services.kf-binding-petclinic-petdb.instance_name}' \
  -e SPRING_CLOUD_GCP_PROJECT_ID='${vcap.services.kf-binding-petclinic-petdb.ProjectId}'
 ```
+
+#### add entry for the service to /etc/hosts
+
+Look up the external IP address for the `istio-ingressgateway` service:
+
+```
+kubectl get service -n istio-system istio-ingressgateway
+```
+
+Edit your local `/etc/hosts` file and add an entry for the IP address of the `istio-ingressgateway` for the petclinic service `petclinic.default.example.com`
+
+You can now access the app using (http://petclinic.default.example.com) in a browser

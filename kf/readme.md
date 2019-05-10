@@ -64,9 +64,11 @@ EOF
 
 #### provision a MySQL database and create the svcat binding
 
+Using kf:
+
 ```
-svcat provision petclinic-db --namespace demo --class google-cloudsql-mysql --plan mysql-db-n1-standard-1
-svcat bind petclinic-db --namespace demo --secret-name binding-petclinic
+kf create-service google-cloudsql-mysql mysql-db-n1-standard-1 petdb
+kf bind-service petclinic petdb --binding-name petclinic-petdb 
 ```
 
 #### enable Istio Egress to Google Cloud SQL instance:
@@ -126,7 +128,7 @@ kf push petclinic --container-registry gcr.io/$(gcloud config get-value core/pro
  -e VCAP_APPLICATION='{"instance_index":0,"name":"petclinic"}' \
  -e VCAP_SERVICES="$(kf vcap-services petclinic)" \
  -e SPRING_CLOUD_GCP_SQL_ENABLED='true' \
- -e SPRING_CLOUD_GCP_SQL_DATABASE_NAME='${vcap.services.kf-binding-petclinic-mydb.database_name}' \
- -e SPRING_CLOUD_GCP_SQL_INSTANCE_CONNECTION_NAME='${vcap.services.kf-binding-petclinic-mydb.ProjectId}:${vcap.services.kf-binding-petclinic-mydb.region}:${vcap.services.kf-binding-petclinic-mydb.instance_name}' \
- -e SPRING_CLOUD_GCP_PROJECT_ID='${vcap.services.kf-binding-petclinic-mydb.ProjectId}'
+ -e SPRING_CLOUD_GCP_SQL_DATABASE_NAME='${vcap.services.kf-binding-petclinic-petdb.database_name}' \
+ -e SPRING_CLOUD_GCP_SQL_INSTANCE_CONNECTION_NAME='${vcap.services.kf-binding-petclinic-petdb.ProjectId}:${vcap.services.kf-binding-petclinic-petdb.region}:${vcap.services.kf-binding-petclinic-petdb.instance_name}' \
+ -e SPRING_CLOUD_GCP_PROJECT_ID='${vcap.services.kf-binding-petclinic-petdb.ProjectId}'
 ```
